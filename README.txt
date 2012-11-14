@@ -247,11 +247,44 @@ exit /b 1
 Compiling on OS X
 -----------------
 
-$ cmake -G Xcode .
+$ sudo port -v install gettext +universal
 
-Open the resulting `minetest.xcodeproj` and build the `package` target.
+Download irrlicht-1.8.zip from http://irrlicht.sourceforge.net/downloads/
+and unpack in the parent directory.
 
-You should then find a `minetest-0.x.x-osx.dmg` in the root directory.
+$ cd irrlicht-1.8/
+$ (cd source/Irrlicht/MacOSX && xcodebuild -arch i386 -project MacOSX.xcodeproj)
+$ sudo cp source/Irrlicht/MacOSX/build/Release/libIrrlicht.a /usr/local/lib/
+$ sudo cp -r include /usr/local/include/Irrlicht
+
+$ cmake -D ENABLE_SOUND=0 -G Xcode .
+$ xcodebuild -project minetest.xcodeproj -target package
+
+You should then find a `minetest-0.x.x-osx.dmg` in the current directory.
+
+Notes/Bugs/Open Issues: 
+
+* This has been tested on Mac OS X 10.7.3 (Lion)
+* The text input fields in the resulting binary have a text color of
+  "white on almost white", making the input almost invisible.
+* The resulting package does _not_ contain the Irrlicht libraries--they
+  still need to be distributed separately at the moment.
+
+Also, the following items mentioned by toabi are still open (See his commit
+message be5b8844):
+
+1) Put the Irrlicht.framework in the app bundle
+
+It has to end up in
+`Contents/Resources/Frameworks/Irrlicht.framework`
+
+2) Put the compiled MainMenu.nib in the app bundle
+
+After the build it resides in
+`bin/Debug/Contents/Resources` but it should be in
+the final app bundle as
+`Contents/MainMenu.nib`
+
 
 License of Minetest-c55 textures and sounds
 -------------------------------------------
